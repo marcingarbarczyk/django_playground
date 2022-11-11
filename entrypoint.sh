@@ -1,0 +1,1 @@
+cd /home/app/django && npm install && python manage.py migrate && python manage.py runserver 0.0.0.0:81
