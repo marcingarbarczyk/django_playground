@@ -3,24 +3,29 @@ version: "3.9"
 services:
   db:
     image: postgres
+    container_name: django-playground-postgres
+    hostname: django-playground-postgres
     volumes:
-      - ./docker_data/db:/var/lib/postgresql/data
+      - ./dev/data/db:/var/lib/postgresql/data
     env_file:
-      - postgres.env
+      - dev/envs/postgres.env
     healthcheck:
       test: "pg_isready --username=postgres && psql --username=postgres --list"
       timeout: 10s
       retries: 20
   web:
     image: django_playground:latest
-    build: .
-    command: sh -c "/home/app/entrypoint.sh"
+    build:
+        context: .
+        dockerfile: dev/web/Dockerfile
+    container_name: django-playground
+    hostname: django-playground
     volumes:
       - .:/home/app/django
     ports:
       - "81:81"
     env_file:
-      - django.env
+      - dev/envs/django.env
     depends_on:
       db:
         condition: service_healthy
@@ -30,25 +35,31 @@ services:
         condition: service_started
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.2.2
+    container_name: django-playground-elasticsearch
+    hostname: django-playground-elasticsearch
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
-      - ./docker_data/elasticsearch:/usr/share/elasticsearch/data
+      - ./dev/data/elasticsearch:/usr/share/elasticsearch/data
   redis:
     image: redis:alpine
+    container_name: django-playground-redis
+    hostname: django-playground-redis
     volumes:
-      - ./docker_data/redis:/data
-    ports:
-      - "6500:6379"
+      - ./dev/data/redis:/data
   celery:
-    image: django_playground:latest
-    command: celery -A project worker -l info -E
+    image: django_playground_celery:latest
+    build:
+      context: .
+      dockerfile: dev/web/Dockerfile
+    container_name: django-playground-celery
+    hostname: django-playground-celery
     volumes:
       - .:/home/app/django
     env_file:
-      - django.env
+      - dev/envs/django.env
     depends_on:
       - redis
       - db

@@ -1,0 +1,1 @@
+cd .. && docker compose build web --no-cache && docker compose build celery --no-cache
