@@ -15,11 +15,7 @@ Features:
 * Django extensions
 * User model extended
 
-1. Build images for django and celery. Go to folder dev and run command: ./build.sh
-2. Go back and just run docker-compose up -d
-3. Go to http://localhost:81
-4. Run: docker exec -it django-playground bash
-5. Run: python manage.py createsuperuser
-6. Run: python manage.py seed blog --number=1000
-7. Run: python manage.py seed books --number=1000
-8. Run: python manage.py seed shop --number=1000
+1. Go to folder dev and run command: ./build.sh
+2. Next step is run command: ./run.sh
+3. Website ready to use on http://localhost:81
+4. Run in terminal: docker exec -it django-playground bash -c "python manage.py createsuperuser" to create superuser
